@@ -12,13 +12,17 @@
       # create a custom "mkPoetryApplication" API function that under the hood uses
       # the packages and versions (python3, poetry etc.) from our pinned nixpkgs above:
       inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
-      defaultPackage = mkPoetryApplication { projectDir = ./.; };
+      app = mkPoetryApplication { projectDir = ./.; };
     in
     {
+
+      # Expose the default package
+      defaultPackage.${system} = app;
+
       apps.${system}.default = {
         type = "app";
         # replace <script> with the name in the [tool.poetry.scripts] section of your pyproject.toml
-        program = "${defaultPackage}/bin/sep";
+        program = "${app}/bin/sep";
       };
     };
 }
